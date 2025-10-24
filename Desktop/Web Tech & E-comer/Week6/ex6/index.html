@@ -48,6 +48,31 @@
         <button id="addProductBtn" class="btn-add-product">+ Thêm khóa học</button>
       </div>
 
+      <!-- Bộ lọc nâng cao -->
+      <div class="advanced-filters">
+        <div class="filter-group">
+          <label for="categoryFilter">Danh mục:</label>
+          <select id="categoryFilter">
+            <option value="all">Tất cả</option>
+            <option value="TSA">TSA - ĐHBK Hà Nội</option>
+            <option value="HSA">HSA - ĐHQG Hà Nội</option>
+            <option value="V-ACT">V-ACT - ĐHQG TP.HCM</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="priceFilter">Khoảng giá:</label>
+          <select id="priceFilter">
+            <option value="all">Tất cả</option>
+            <option value="0-2000000">Dưới 2 triệu</option>
+            <option value="2000000-2500000">2 - 2.5 triệu</option>
+            <option value="2500000-999999999">Trên 2.5 triệu</option>
+          </select>
+        </div>
+
+        <button id="resetFiltersBtn" class="btn-reset-filters">🔄 Đặt lại bộ lọc</button>
+      </div>
+
       <!-- Form thêm sản phẩm (ẩn mặc định) -->
       <div id="addProductForm" class="hidden">
         <form id="productForm">
@@ -112,7 +137,7 @@
             <li>Tài liệu: Bộ đề bám ma trận + phân tích chi tiết</li>
             <li>Hỗ trợ: Nhóm hỏi–đáp và chữa bài hằng tuần</li>
           </ul>
-          <p><strong>Giá:</strong> 2490000&nbsp;VND</p>
+          <p><strong>Giá:</strong> 2.490.000&nbsp;VND</p>
         </section>
 
         <p><a href="#form-dang-ky">Đăng ký ngay</a></p>
@@ -139,7 +164,7 @@
             <li>Đề cương: Lộ trình theo từng mô-đun kỹ năng</li>
             <li>Mock test: 3 lần thi thử chấm điểm tự động</li>
           </ul>
-          <p><strong>Giá:</strong> 2290000&nbsp;VND</p>
+          <p><strong>Giá:</strong> 2.290.000&nbsp;VND</p>
         </section>
 
         <p><a href="#form-dang-ky">Đăng ký ngay</a></p>
@@ -165,7 +190,7 @@
             <li>Kho câu hỏi: Cập nhật theo xu hướng ra đề mới</li>
             <li>Coaching: 1–1 định kỳ theo tiến độ học viên</li>
           </ul>
-          <p><strong>Giá:</strong> 2390000&nbsp;VND</p>
+          <p><strong>Giá:</strong> 2.390.000&nbsp;VND</p>
         </section>
 
         <p><a href="#form-dang-ky">Đăng ký ngay</a></p>

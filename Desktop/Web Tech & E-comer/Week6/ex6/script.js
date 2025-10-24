@@ -151,47 +151,114 @@ function addProductToStorage(productData) {
   console.log('✅ Đã thêm sản phẩm vào LocalStorage:', productData.name);
 }
 
-// ===== CHỨC NĂNG TÌM KIẾM SẢN PHẨM =====
+// ===== CHỨC NĂNG TÌM KIẾM VÀ LỌC SẢN PHẨM NÂNG CAO =====
 
 /**
- * Hàm tìm kiếm và lọc sản phẩm theo từ khóa
+ * Hàm lọc sản phẩm nâng cao (tìm kiếm + danh mục + giá)
  */
-function searchProducts() {
-  // Lấy giá trị từ ô input tìm kiếm
-  const searchInput = document.getElementById('searchInput');
-  const searchTerm = searchInput.value.toLowerCase().trim();
+function filterProducts() {
+  // Lấy giá trị từ các bộ lọc
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  const categoryFilter = document.getElementById('categoryFilter').value;
+  const priceFilter = document.getElementById('priceFilter').value;
   
   // Lấy tất cả các sản phẩm
   const products = document.querySelectorAll('.product-item');
   
-  // Duyệt qua từng sản phẩm
+  let visibleCount = 0;
+  
+  // Duyệt qua từng sản phẩm với hiệu ứng
   products.forEach(function(product) {
-    // Lấy tên sản phẩm từ thẻ h3 có class "product-name"
     const productNameElement = product.querySelector('.product-name');
     
-    if (productNameElement) {
-      const productName = productNameElement.textContent.toLowerCase();
-      
-      // Kiểm tra xem tên sản phẩm có chứa từ khóa tìm kiếm không
-      if (productName.includes(searchTerm)) {
-        // Hiển thị sản phẩm
-        product.style.display = '';
-      } else {
-        // Ẩn sản phẩm
-        product.style.display = 'none';
+    if (!productNameElement) return;
+    
+    const productName = productNameElement.textContent.toLowerCase();
+    
+    // Kiểm tra từ khóa tìm kiếm
+    const matchesSearch = searchTerm === '' || productName.includes(searchTerm);
+    
+    // Kiểm tra danh mục
+    let matchesCategory = true;
+    if (categoryFilter !== 'all') {
+      matchesCategory = productName.includes(categoryFilter.toLowerCase());
+    }
+    
+    // Kiểm tra giá
+    let matchesPrice = true;
+    if (priceFilter !== 'all') {
+      const priceElement = product.querySelector('section p strong');
+      if (priceElement) {
+        const priceText = priceElement.parentElement.textContent;
+        const priceMatch = priceText.match(/[\d.]+/g);
+        if (priceMatch) {
+          const price = parseInt(priceMatch.join('').replace(/\./g, ''));
+          const [minPrice, maxPrice] = priceFilter.split('-').map(Number);
+          matchesPrice = price >= minPrice && price <= maxPrice;
+        }
       }
+    }
+    
+    // Hiển thị hoặc ẩn sản phẩm với hiệu ứng
+    if (matchesSearch && matchesCategory && matchesPrice) {
+      showProductWithAnimation(product);
+      visibleCount++;
+    } else {
+      hideProductWithAnimation(product);
     }
   });
   
-  // Hiển thị thông báo nếu không tìm thấy sản phẩm nào
-  const visibleProducts = document.querySelectorAll('.product-item[style=""]');
-  const allHidden = Array.from(products).every(p => p.style.display === 'none');
-  
-  if (allHidden && searchTerm !== '') {
+  // Hiển thị thông báo nếu không tìm thấy
+  if (visibleCount === 0) {
     showNoResultsMessage();
   } else {
     hideNoResultsMessage();
   }
+}
+
+/**
+ * Hiển thị sản phẩm với hiệu ứng fade in
+ */
+function showProductWithAnimation(product) {
+  product.classList.remove('hiding');
+  product.classList.add('showing');
+  product.style.display = '';
+  
+  // Xóa class animation sau khi hoàn thành
+  setTimeout(() => {
+    product.classList.remove('showing');
+  }, 400);
+}
+
+/**
+ * Ẩn sản phẩm với hiệu ứng fade out
+ */
+function hideProductWithAnimation(product) {
+  product.classList.add('hiding');
+  product.classList.remove('showing');
+  
+  // Ẩn hoàn toàn sau khi animation kết thúc
+  setTimeout(() => {
+    product.style.display = 'none';
+    product.classList.remove('hiding');
+  }, 400);
+}
+
+/**
+ * Hàm tìm kiếm đơn giản (backward compatibility)
+ */
+function searchProducts() {
+  filterProducts();
+}
+
+/**
+ * Đặt lại tất cả bộ lọc
+ */
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('categoryFilter').value = 'all';
+  document.getElementById('priceFilter').value = 'all';
+  filterProducts();
 }
 
 /**
@@ -232,34 +299,60 @@ function hideNoResultsMessage() {
 // ===== CHỨC NĂNG ẨN/HIỆN FORM THÊM SẢN PHẨM =====
 
 /**
- * Hàm toggle (ẩn/hiện) form thêm sản phẩm
+ * Hàm toggle (ẩn/hiện) form thêm sản phẩm với hiệu ứng mượt mà
  */
 function toggleAddProductForm() {
   const addProductForm = document.getElementById('addProductForm');
   
-  // Sử dụng classList.toggle để chuyển đổi class "hidden"
-  addProductForm.classList.toggle('hidden');
+  // Kiểm tra trạng thái hiện tại
+  const isHidden = addProductForm.classList.contains('hidden');
   
-  // Scroll đến form nếu form đang được hiển thị
-  if (!addProductForm.classList.contains('hidden')) {
-    addProductForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    // Xóa thông báo lỗi cũ (nếu có)
+  if (isHidden) {
+    // Hiện form
+    addProductForm.classList.remove('hidden');
+    
+    // Thêm class 'show' để trigger transition
+    setTimeout(() => {
+      addProductForm.classList.add('show');
+    }, 10);
+    
+    // Scroll đến form
+    setTimeout(() => {
+      addProductForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+    
+    // Xóa thông báo lỗi cũ
     hideErrorMessage();
+  } else {
+    // Ẩn form
+    addProductForm.classList.remove('show');
+    
+    // Đợi transition hoàn thành rồi mới thêm class hidden
+    setTimeout(() => {
+      addProductForm.classList.add('hidden');
+    }, 500);
   }
 }
 
 /**
- * Hàm ẩn form thêm sản phẩm
+ * Hàm ẩn form thêm sản phẩm với hiệu ứng
  */
 function hideAddProductForm() {
   const addProductForm = document.getElementById('addProductForm');
-  addProductForm.classList.add('hidden');
   
-  // Reset form khi đóng
-  document.getElementById('productForm').reset();
+  // Xóa class 'show' để trigger transition đóng
+  addProductForm.classList.remove('show');
   
-  // Xóa thông báo lỗi
-  hideErrorMessage();
+  // Đợi transition hoàn thành
+  setTimeout(() => {
+    addProductForm.classList.add('hidden');
+    
+    // Reset form sau khi ẩn hoàn toàn
+    document.getElementById('productForm').reset();
+    
+    // Xóa thông báo lỗi
+    hideErrorMessage();
+  }, 500);
 }
 
 // ===== CHỨC NĂNG VALIDATION =====
@@ -560,13 +653,30 @@ function initializeApp() {
   // Gắn sự kiện submit cho form
   productForm.addEventListener('submit', handleAddProduct);
   
+  // === Sự kiện CHO BỘ LỌC NÂNG CAO ===
+  
+  const categoryFilter = document.getElementById('categoryFilter');
+  const priceFilter = document.getElementById('priceFilter');
+  const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+  
+  // Gắn sự kiện change cho bộ lọc danh mục
+  categoryFilter.addEventListener('change', filterProducts);
+  
+  // Gắn sự kiện change cho bộ lọc khoảng giá
+  priceFilter.addEventListener('change', filterProducts);
+  
+  // Gắn sự kiện click cho nút reset bộ lọc
+  resetFiltersBtn.addEventListener('click', resetFilters);
+  
   // === Thông báo đã load xong ===
   console.log('✅ JavaScript đã được khởi tạo thành công!');
   console.log('📦 Các tính năng sẵn có:');
   console.log('   - Tìm kiếm sản phẩm (gõ vào ô tìm kiếm)');
+  console.log('   - Bộ lọc nâng cao (danh mục + khoảng giá)');
+  console.log('   - Hiệu ứng chuyển cảnh mượt mà (animation)');
   console.log('   - Ẩn/hiện form thêm sản phẩm (click nút "Thêm khóa học")');
   console.log('   - Thêm sản phẩm mới với validation đầy đủ');
-  console.log('   - Sản phẩm mới tự động tương tác với chức năng tìm kiếm');
+  console.log('   - Sản phẩm mới tự động tương tác với chức năng tìm kiếm và lọc');
   console.log('   - 💾 Lưu trữ dữ liệu với LocalStorage (dữ liệu không mất khi tải lại trang)');
 }
 
