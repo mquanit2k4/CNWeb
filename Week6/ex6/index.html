@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Cửa hàng Khóa Ôn Thi — TSA • HSA • V-ACT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Website bán các khóa ôn thi TSA, HSA, V-ACT dành cho học sinh lớp 12." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== Header & Navigation ===== -->
+  <header>
+    <h1>Cửa hàng Khóa Ôn Thi</h1>
+    <p><em>Sẵn sàng cho kỳ đánh giá năng lực — học đúng trọng tâm, luyện đúng định dạng.</em></p>
+
+    <nav aria-label="Điều hướng chính">
+      <ul>
+        <li><a href="#gioi-thieu">Giới thiệu</a></li>
+        <li><a href="#khoa-hoc">Khóa học</a></li>
+        <li><a href="#lien-he">Liên hệ/Đăng ký</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===== Main Content ===== -->
+  <main id="noi-dung-chinh">
+    <!-- Giới thiệu -->
+    <section id="gioi-thieu" aria-labelledby="gioi-thieu-heading">
+      <h2 id="gioi-thieu-heading">Giới thiệu</h2>
+      <p>
+        Hệ thống khóa ôn thi được thiết kế theo cấu trúc đề thi thực tế, bám sát ma trận kiến thức
+        và cập nhật thường xuyên. Học viên được cung cấp lộ trình rõ ràng, ngân hàng câu hỏi luyện tập
+        và các buổi chữa đề định kỳ.
+      </p>
+    </section>
+
+    <!-- Danh sách khóa học -->
+    <section id="khoa-hoc" aria-labelledby="khoa-hoc-heading">
+      <h2 id="khoa-hoc-heading">Danh sách khóa học</h2>
+
+      <!-- Thanh công cụ: Tìm kiếm và Thêm sản phẩm -->
+      <div class="product-toolbar">
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Tìm kiếm khóa học..." />
+          <button id="searchBtn">Tìm kiếm</button>
+        </div>
+        <button id="addProductBtn" class="btn-add-product">+ Thêm khóa học</button>
+      </div>
+
+      <!-- Bộ lọc nâng cao -->
+      <div class="advanced-filters">
+        <div class="filter-group">
+          <label for="categoryFilter">Danh mục:</label>
+          <select id="categoryFilter">
+            <option value="all">Tất cả</option>
+            <option value="TSA">TSA - ĐHBK Hà Nội</option>
+            <option value="HSA">HSA - ĐHQG Hà Nội</option>
+            <option value="V-ACT">V-ACT - ĐHQG TP.HCM</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="priceFilter">Khoảng giá:</label>
+          <select id="priceFilter">
+            <option value="all">Tất cả</option>
+            <option value="0-2000000">Dưới 2 triệu</option>
+            <option value="2000000-2500000">2 - 2.5 triệu</option>
+            <option value="2500000-999999999">Trên 2.5 triệu</option>
+          </select>
+        </div>
+
+        <button id="resetFiltersBtn" class="btn-reset-filters">🔄 Đặt lại bộ lọc</button>
+      </div>
+
+      <!-- Form thêm sản phẩm (ẩn mặc định) -->
+      <div id="addProductForm" class="hidden">
+        <form id="productForm">
+          <fieldset>
+            <legend>Thêm khóa học mới</legend>
+
+            <p>
+              <label for="product-name">Tên khóa học</label><br />
+              <input id="product-name" name="product-name" type="text" placeholder="VD: [TSA] Khóa Ôn Thi..." required />
+            </p>
+
+            <p>
+              <label for="product-description">Mô tả</label><br />
+              <textarea id="product-description" name="product-description" rows="4" placeholder="Nhập mô tả khóa học..." required></textarea>
+            </p>
+
+            <p>
+              <label for="product-duration">Thời lượng</label><br />
+              <input id="product-duration" name="product-duration" type="text" placeholder="VD: 10 tuần (2 buổi/tuần)" required />
+            </p>
+
+            <p>
+              <label for="product-price">Giá (VND)</label><br />
+              <input id="product-price" name="product-price" type="number" min="1" placeholder="VD: 2490000" required />
+            </p>
+
+            <p>
+              <label for="product-image">URL hình ảnh</label><br />
+              <input id="product-image" name="product-image" type="url" placeholder="https://..." />
+            </p>
+
+            <!-- Thông báo lỗi -->
+            <p id="errorMsg" class="error-message hidden"></p>
+
+            <div class="form-buttons">
+              <button type="submit" class="btn-submit">Thêm khóa học</button>
+              <button type="button" id="cancelBtn" class="btn-cancel">Hủy</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+      <!-- Container danh sách sản phẩm -->
+      <div id="product-list">
+        <!-- Khóa 1: TSA -->
+        <article class="product-item" aria-labelledby="tsa-title">
+        <header>
+          <h3 class="product-name" id="tsa-title">[TSA] Khóa Ôn Thi Đánh Giá Tư Duy Đại Học Bách Khoa Hà Nội</h3>
+        </header>
+
+        <p>
+          Tập trung vào <strong>Tư duy Định lượng</strong>, <strong>Tư duy Định tính</strong> và <strong>Năng lực Giải quyết vấn đề</strong>.
+          Phù hợp với thí sinh dự thi vào ĐHBK Hà Nội.
+        </p>
+
+        <img src="https://hethongilp.com/_next/image?url=https%3A%2F%2Fhethongilp.sgp1.digitaloceanspaces.com%2F63d9fb23-ccbb-485c-88ff-b51ab7df8d28_kh%25C3%25B3a%2520h%25E1%25BB%258Dc%2520web%2520%2528ch%25E1%25BB%25AF%2520tr%25C3%25B2n%2529-01.jpg&w=828&q=75" alt="Hình ảnh minh họa khóa học TSA" />
+
+        <section aria-label="Thông tin nhanh TSA">
+          <h4>Thông tin chính</h4>
+          <ul>
+            <li>Thời lượng: 10 tuần (2 buổi/tuần)</li>
+            <li>Tài liệu: Bộ đề bám ma trận + phân tích chi tiết</li>
+            <li>Hỗ trợ: Nhóm hỏi–đáp và chữa bài hằng tuần</li>
+          </ul>
+          <p><strong>Giá:</strong> 2.490.000&nbsp;VND</p>
+        </section>
+
+        <p><a href="#form-dang-ky">Đăng ký ngay</a></p>
+      </article>
+
+      <hr />
+
+      <!-- Khóa 2: HSA -->
+      <article class="product-item" aria-labelledby="hsa-title">
+        <header>
+          <h3 class="product-name" id="hsa-title">[HSA] Khóa Ôn Thi Đánh Giá Năng Lực Đại Học Quốc Gia Hà Nội</h3>
+        </header>
+
+        <p>
+          Luyện toàn diện các phần <strong>Ngôn ngữ</strong>, <strong>Toán học</strong>, <strong>Khoa học</strong> và <strong>Tư duy logic</strong> theo định dạng VNU-HSA.
+        </p>
+
+        <img src="https://hethongilp.com/_next/image?url=https%3A%2F%2Fhethongilp.sgp1.digitaloceanspaces.com%2F3105fb72-7433-4f5b-9eb7-cc1ad6e7f7f9_kh%25C3%25B3a%2520h%25E1%25BB%258Dc%2520web%2520%2528ch%25E1%25BB%25AF%2520tr%25C3%25B2n%2529-02.jpg&w=828&q=75" alt="Hình ảnh minh họa khóa học HSA" />
+        
+        <section aria-label="Thông tin nhanh HSA">
+          <h4>Thông tin chính</h4>
+          <ul>
+            <li>Thời lượng: 8 tuần (3 buổi/tuần)</li>
+            <li>Đề cương: Lộ trình theo từng mô-đun kỹ năng</li>
+            <li>Mock test: 3 lần thi thử chấm điểm tự động</li>
+          </ul>
+          <p><strong>Giá:</strong> 2.290.000&nbsp;VND</p>
+        </section>
+
+        <p><a href="#form-dang-ky">Đăng ký ngay</a></p>
+      </article>
+
+      <hr />
+
+      <!-- Khóa 3: V-ACT -->
+      <article class="product-item" aria-labelledby="vact-title">
+        <header>
+          <h3 class="product-name" id="vact-title">[V-ACT] Khóa Ôn Thi Đánh Giá Năng Lực Đại Học Quốc Gia TP.HCM</h3>
+        </header>
+
+        <p>
+          Rèn luyện trọng tâm các hợp phần <strong>Ngôn ngữ</strong>, <strong>Toán</strong>, <strong>Giải quyết vấn đề</strong>, theo cấu trúc đề VNU-HCM.
+        </p>
+
+        <img src="https://hethongilp.com/_next/image?url=https%3A%2F%2Fhethongilp.sgp1.digitaloceanspaces.com%2F0edb7b26-365b-451b-9f27-f7639556b6f1_kh%25C3%25B3a%2520h%25E1%25BB%258Dc%2520web%2520%2528ch%25E1%25BB%25AF%2520tr%25C3%25B2n%2529-03.jpg&w=828&q=75" alt="Hình ảnh minh họa khóa học V-ACT" />
+        <section aria-label="Thông tin nhanh V-ACT">
+          <h4>Thông tin chính</h4>
+          <ul>
+            <li>Thời lượng: 9 tuần (2–3 buổi/tuần)</li>
+            <li>Kho câu hỏi: Cập nhật theo xu hướng ra đề mới</li>
+            <li>Coaching: 1–1 định kỳ theo tiến độ học viên</li>
+          </ul>
+          <p><strong>Giá:</strong> 2.390.000&nbsp;VND</p>
+        </section>
+
+        <p><a href="#form-dang-ky">Đăng ký ngay</a></p>
+      </article>
+      </div>
+    </section>
+
+    <!-- Form liên hệ / đăng ký -->
+    <section id="lien-he" aria-labelledby="lien-he-heading">
+      <h2 id="lien-he-heading">Liên hệ / Đăng ký</h2>
+      <p>Điền thông tin dưới đây, chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
+
+      <form id="form-dang-ky" action="#" method="post">
+        <fieldset>
+          <legend>Thông tin học viên</legend>
+
+          <p>
+            <label for="ho-ten">Họ và tên</label><br />
+            <input id="ho-ten" name="ho-ten" type="text" placeholder="Nguyễn Văn A" required />
+          </p>
+
+          <p>
+            <label for="email">Email</label><br />
+            <input id="email" name="email" type="email" placeholder="email@domain.com" required />
+          </p>
+
+          <p>
+            <label for="khoa-hoc-chon">Chọn khóa học</label><br />
+            <select id="khoa-hoc-chon" name="khoa-hoc-chon" required>
+              <option value="" selected disabled>-- Vui lòng chọn --</option>
+              <option value="TSA">[TSA] Ôn thi Đánh giá Tư duy ĐHBK Hà Nội</option>
+              <option value="HSA">[HSA] Ôn thi ĐGNL ĐHQG Hà Nội</option>
+              <option value="V-ACT">[V-ACT] Ôn thi ĐGNL ĐHQG TP.HCM</option>
+            </select>
+          </p>
+
+          <p>
+            <label for="noi-dung">Nội dung / Ghi chú</label><br />
+            <textarea id="noi-dung" name="noi-dung" rows="5" placeholder="Mục tiêu điểm, lịch rảnh, câu hỏi thêm..." required></textarea>
+          </p>
+
+          <p>
+            <button type="submit">Gửi đăng ký</button>
+          </p>
+        </fieldset>
+      </form>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <p><strong>Cửa hàng Khóa Ôn Thi</strong> — © 2025. Mọi quyền được bảo lưu.</p>
+    <address>
+      Hà Nội, Việt Nam • Email: lienhe@khoaơnthi.vn • Điện thoại: 0123 456 789
+    </address>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
