@@ -2,6 +2,9 @@
 
 Ứng dụng quản lý người dùng đơn giản được xây dựng bằng React + Vite, thực hiện đầy đủ các chức năng CRUD (Create, Read, Update, Delete).
 
+## Minh chứng evidence video
+Link video: https://drive.google.com/file/d/1segz7BRilChPbeZXsZG9SCjiD7eACRWV/view?usp=sharing
+
 ## Tính năng
 
 - ✅ **Tìm kiếm**: Tìm kiếm người dùng theo tên hoặc username
