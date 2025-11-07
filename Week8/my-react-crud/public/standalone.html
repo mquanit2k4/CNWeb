@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - React CDN</title>
+    
+    <!-- React CDN -->
+    <script src='https://unpkg.com/react@18/umd/react.development.js'></script>
+    <script src='https://unpkg.com/react-dom@18/umd/react-dom.development.js'></script>
+    <script src='https://unpkg.com/@babel/standalone/babel.min.js'></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-container h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .add-user-container {
+            margin-bottom: 20px;
+        }
+
+        .btn-add {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-add:hover {
+            background-color: #45a049;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-table thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .user-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 6px 12px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-edit {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #0b7dda;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #da190b;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 6px;
+            width: 400px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h4 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-save,
+        .btn-cancel {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #45a049;
+        }
+
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background-color: #da190b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id='root'></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Component SearchForm
+        function SearchForm({ onChangeValue }) {
+            return (
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Tìm theo name, username"
+                        onChange={(e) => onChangeValue(e.target.value)}
+                        className="search-input"
+                    />
+                </div>
+            );
+        }
+
+        // Component AddUser
+        function AddUser({ onAdd }) {
+            const [adding, setAdding] = useState(false);
+            const [user, setUser] = useState({
+                name: "",
+                username: "",
+                email: "",
+                address: { street: "", suite: "", city: "" },
+                phone: "",
+                website: ""
+            });
+
+            const handleChange = (e) => {
+                const { id, value } = e.target;
+                if (["street", "suite", "city"].includes(id)) {
+                    setUser({ ...user, address: { ...user.address, [id]: value } });
+                } else {
+                    setUser({ ...user, [id]: value });
+                }
+            };
+
+            const handleAdd = () => {
+                if (user.name === "" || user.username === "") {
+                    alert("Vui lòng nhập Name và Username!");
+                    return;
+                }
+                onAdd(user);
+                setUser({
+                    name: "",
+                    username: "",
+                    email: "",
+                    address: { street: "", suite: "", city: "" },
+                    phone: "",
+                    website: ""
+                });
+                setAdding(false);
+            };
+
+            return (
+                <div className="add-user-container">
+                    <button className="btn-add" onClick={() => setAdding(true)}>
+                        Thêm người dùng
+                    </button>
+
+                    {adding && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <h4>Thêm người dùng</h4>
+                                <div className="form-group">
+                                    <label htmlFor="name">Name:</label>
+                                    <input id="name" type="text" value={user.name} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="username">Username:</label>
+                                    <input id="username" type="text" value={user.username} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="email">Email:</label>
+                                    <input id="email" type="text" value={user.email} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="street">Street:</label>
+                                    <input id="street" type="text" value={user.address.street} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="suite">Suite:</label>
+                                    <input id="suite" type="text" value={user.address.suite} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="city">City:</label>
+                                    <input id="city" type="text" value={user.address.city} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="phone">Phone:</label>
+                                    <input id="phone" type="text" value={user.phone} onChange={handleChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="website">Website:</label>
+                                    <input id="website" type="text" value={user.website} onChange={handleChange} />
+                                </div>
+                                <div className="modal-actions">
+                                    <button className="btn-save" onClick={handleAdd}>Lưu</button>
+                                    <button className="btn-cancel" onClick={() => setAdding(false)}>Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component ResultTable
+        function ResultTable({ keyword, user, onAdded }) {
+            const [users, setUsers] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [editing, setEditing] = useState(null);
+
+            // Tải dữ liệu 1 lần khi component mount
+            useEffect(() => {
+                fetch("https://jsonplaceholder.typicode.com/users")
+                    .then(res => res.json())
+                    .then(data => {
+                        setUsers(data);
+                        setLoading(false);
+                    });
+            }, []);
+
+            // Thêm người dùng mới
+            useEffect(() => {
+                if (user) {
+                    setUsers((prev) => [...prev, { ...user, id: prev.length + 1 }]);
+                    onAdded();
+                }
+            }, [user]);
+
+            // Lọc danh sách theo keyword
+            const filteredUsers = users.filter(
+                (u) =>
+                    u.name.toLowerCase().includes(keyword.toLowerCase()) ||
+                    u.username.toLowerCase().includes(keyword.toLowerCase())
+            );
+
+            // Hàm sửa người dùng
+            function editUser(user) {
+                setEditing({ ...user, address: { ...user.address } });
+            }
+
+            // Xử lý thay đổi khi sửa
+            function handleEditChange(field, value) {
+                if (["street", "suite", "city"].includes(field)) {
+                    setEditing({ ...editing, address: { ...editing.address, [field]: value } });
+                } else {
+                    setEditing({ ...editing, [field]: value });
+                }
+            }
+
+            // Lưu sau khi chỉnh sửa
+            function saveUser() {
+                if (editing.name === "" || editing.username === "") {
+                    alert("Vui lòng nhập Name và Username!");
+                    return;
+                }
+                setUsers(prev => prev.map(u => u.id === editing.id ? editing : u));
+                setEditing(null);
+            }
+
+            // Xóa người dùng
+            function removeUser(id) {
+                setUsers((prev) => prev.filter((u) => u.id !== id));
+            }
+
+            if (loading) {
+                return <div className="loading">Đang tải dữ liệu...</div>;
+            }
+
+            return (
+                <div className="table-container">
+                    <table className="user-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>City</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredUsers.map((u) => (
+                                <tr key={u.id}>
+                                    <td>{u.id}</td>
+                                    <td>{u.name}</td>
+                                    <td>{u.username}</td>
+                                    <td>{u.email}</td>
+                                    <td>{u.address.city}</td>
+                                    <td>
+                                        <button className="btn-edit" onClick={() => editUser(u)}>Sửa</button>
+                                        <button className="btn-delete" onClick={() => removeUser(u.id)}>Xóa</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    {editing && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <h4>Sửa người dùng</h4>
+                                <div className="form-group">
+                                    <label htmlFor="edit-name">Name:</label>
+                                    <input
+                                        id="edit-name"
+                                        type="text"
+                                        value={editing.name}
+                                        onChange={(e) => handleEditChange("name", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-username">Username:</label>
+                                    <input
+                                        id="edit-username"
+                                        type="text"
+                                        value={editing.username}
+                                        onChange={(e) => handleEditChange("username", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-email">Email:</label>
+                                    <input
+                                        id="edit-email"
+                                        type="text"
+                                        value={editing.email}
+                                        onChange={(e) => handleEditChange("email", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-street">Street:</label>
+                                    <input
+                                        id="edit-street"
+                                        type="text"
+                                        value={editing.address.street}
+                                        onChange={(e) => handleEditChange("street", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-suite">Suite:</label>
+                                    <input
+                                        id="edit-suite"
+                                        type="text"
+                                        value={editing.address.suite}
+                                        onChange={(e) => handleEditChange("suite", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-city">City:</label>
+                                    <input
+                                        id="edit-city"
+                                        type="text"
+                                        value={editing.address.city}
+                                        onChange={(e) => handleEditChange("city", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-phone">Phone:</label>
+                                    <input
+                                        id="edit-phone"
+                                        type="text"
+                                        value={editing.phone}
+                                        onChange={(e) => handleEditChange("phone", e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="edit-website">Website:</label>
+                                    <input
+                                        id="edit-website"
+                                        type="text"
+                                        value={editing.website}
+                                        onChange={(e) => handleEditChange("website", e.target.value)}
+                                    />
+                                </div>
+                                <div className="modal-actions">
+                                    <button className="btn-save" onClick={saveUser}>Lưu</button>
+                                    <button className="btn-cancel" onClick={() => setEditing(null)}>Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Component App (Component gốc)
+        function App() {
+            const [kw, setKeyword] = useState("");
+            const [newUser, setNewUser] = useState(null);
+
+            return (
+                <div className="app-container">
+                    <h1>Quản lý người dùng</h1>
+                    <SearchForm onChangeValue={setKeyword} />
+                    <AddUser onAdd={setNewUser} />
+                    <ResultTable keyword={kw} user={newUser} onAdded={() => setNewUser(null)} />
+                </div>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
