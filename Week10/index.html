@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - CRUD Application</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>User Management System</h1>
+        
+        <!-- Search & Add User Section -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm theo tên...">
+                <button onclick="searchUsers()">Tìm kiếm</button>
+                <button onclick="resetSearch()">Clear Search</button>
+                <button onclick="resetData()" style="background: #ff6b6b;">Reset Data</button>
+            </div>
+            <button class="btn-add" onclick="openAddForm()">+ Thêm người dùng mới</button>
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-container">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be generated here -->
+        </div>
+
+        <!-- Add/Edit User Modal -->
+        <div id="userModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle">Thêm người dùng mới</h2>
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    
+                    <div class="form-group">
+                        <label for="userName">Tên:</label>
+                        <input type="text" id="userName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userUsername">Username:</label>
+                        <input type="text" id="userUsername" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userEmail">Email:</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userPhone">Số điện thoại:</label>
+                        <input type="text" id="userPhone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userWebsite">Website:</label>
+                        <input type="text" id="userWebsite">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userCity">Thành phố:</label>
+                        <input type="text" id="userCity">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userCompany">Công ty:</label>
+                        <input type="text" id="userCompany">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Lưu</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <h2>Xác nhận xóa</h2>
+                <p>Bạn có chắc chắn muốn xóa người dùng này?</p>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="confirmDelete()">Xóa</button>
+                    <button class="btn-cancel" onclick="closeDeleteModal()">Hủy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
