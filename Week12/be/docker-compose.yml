@@ -1,0 +1,14 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: student-mongo
+    ports:
+    # host:container
+      - "27017:27017"
+    volumes:
+    # host:container
+    # Tắt bỏ container thì dữ liệu vẫn được lưu trữ trên host
+      - ./mongodbdata:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=student-management
+    restart: unless-stopped
